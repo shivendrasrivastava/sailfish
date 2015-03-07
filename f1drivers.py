@@ -37,30 +37,41 @@ def remove_data(data):
     return data
 
 
-def start(starting_year, data_type="driverStandings"):
+def build_url(year, data_type):
     url_prefix = "http://ergast.com/api/f1"
+    url = '{url_prefix}/{year}/{data_type}.json'.format(url_prefix=url_prefix, year=year, data_type=data_type)
+    return url
 
-    for x in range(0, 4):
-        year = str(starting_year+x)
-        url = '{url_prefix}/{year}/{data_type}.json'.format(url_prefix=url_prefix, year=year, data_type=data_type)
+
+def get_data_after_year(starting_year, ending_year, data_type="driverStandings"):
+    for year in range(starting_year, ending_year):
+        url = build_url(str(year), data_type)
         print url
         # read_data(url, year)
 
 
-def help_message():
-    print "Please enter atleast one argument (1st argument= Year, 2nd argument= data type)"
 
-if __name__ == '__main__':
-    if len(sys.argv) >= 2:
+def help_message():
+    print "Please enter at least one argument " \
+          "(1st argument= Starting Year,2nd argument= Ending Year 3rd argument= data type)"
+
+
+def main():
+    if len(sys.argv) >= 3:
         try:
-            year = int(sys.argv[1])
+            starting_year = int(sys.argv[1])
+            ending_year = int(sys.argv[2])
         except ValueError:
             help_message()
             exit(1)
-        if len(sys.argv) == 3:
+        if len(sys.argv) == 4:
             data_type = sys.argv[2]
-            start(year, data_type)
+            get_data_after_year(starting_year, ending_year, data_type)
         else:
-            start(year)
+            get_data_after_year(starting_year, ending_year)
     else:
         help_message()
+
+
+if __name__ == '__main__':
+    main()

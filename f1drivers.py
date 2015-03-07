@@ -2,7 +2,7 @@ __author__ = 'Shiven'
 import requests
 import json
 import pymongo
-
+import sys
 
 def read_data(url, year):
     r = requests.get(url)
@@ -37,16 +37,30 @@ def remove_data(data):
     return data
 
 
-def start(year, data_type="driverStandings"):
-    url_part_1 = "http://ergast.com/api/f1/"
-    url_part_2 = year
-    url_part_3 = "/driverStandings.json"
+def start(starting_year, data_type="driverStandings"):
+    url_prefix = "http://ergast.com/api/f1"
 
     for x in range(0, 4):
-        year = str(url_part_2+x)
-        url = url_part_1 + year + url_part_3
+        year = str(starting_year+x)
+        url = '{url_prefix}/{year}/{data_type}.json'.format(url_prefix=url_prefix, year=year, data_type=data_type)
         print url
-        read_data(url, year)
+        # read_data(url, year)
+
+
+def help_message():
+    print "Please enter atleast one argument (1st argument= Year, 2nd argument= data type)"
 
 if __name__ == '__main__':
-    start(year, data_type)
+    if len(sys.argv) >= 2:
+        try:
+            year = int(sys.argv[1])
+        except ValueError:
+            help_message()
+            exit(1)
+        if len(sys.argv) == 3:
+            data_type = sys.argv[2]
+            start(year, data_type)
+        else:
+            start(year)
+    else:
+        help_message()

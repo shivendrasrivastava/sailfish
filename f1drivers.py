@@ -37,9 +37,9 @@ def remove_data(data):
     return data
 
 
-def start():
+def start(year, data_type="driverStandings"):
     url_part_1 = "http://ergast.com/api/f1/"
-    url_part_2 = 2010
+    url_part_2 = year
     url_part_3 = "/driverStandings.json"
 
     for x in range(0, 4):
@@ -48,4 +48,5 @@ def start():
         print url
         read_data(url, year)
 
-start()
+if __name__ == '__main__':
+    start(year, data_type)

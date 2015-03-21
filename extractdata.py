@@ -1,14 +1,13 @@
 __author__ = 'Shiven'
 
-import f1drivers as f1
-import plotly.plotly as py
-import plotly.graph_objs as graph
-import random
+import plot
+import colorutils as color
+import mongoutils as db
 
 
 def extract_data():
     print "Connecting Mongo"
-    posts = f1.connect_mongo()
+    posts = db.connect_mongo()
     construct_lists(posts)
 
 
@@ -16,35 +15,19 @@ def construct_lists(posts):
     print "Constructing Lists"
     data_list = []
     years = posts.distinct("year")
-    for year in years:
+    for index, year in enumerate(years):
         print year
+
         result = get_data(posts, year)
 
         points = result["points"]
         position = result["position"]
 
-        trace = graph.Scatter(x=points, y=position, mode='markers',
-                              name=year, marker=graph.Marker(color=get_color(),
-                                                               size=12, line=graph.Line(color='white', width=0.5)))
-        print trace
+        trace = plot.scatter(points, position, year, color.get_green(years, index))
+
         data_list.append(trace)
 
-    data = graph.Data(data_list)
-    layout = graph.Layout(
-        title='Drivers Vs Position Summary',
-        xaxis=graph.XAxis(
-            title='Position',
-            showgrid=False,
-            zeroline=False
-        ),
-        yaxis=graph.YAxis(
-            title='Drivers',
-            showline=False
-        )
-    )
-    fig = graph.Figure(data=data, layout=layout)
-    url = py.plot(fig, filename="f1test1")
-    print url
+    plot.plot_data(data_list)
 
 
 def get_data(posts, year):
@@ -57,11 +40,6 @@ def get_data(posts, year):
 
     return {"points": points, "position": position}
 
-
-def get_color():
-    r = lambda: random.randint(0,255)
-    color = ('#%02X%02X%02X' % (r(), r(), r()))
-    return color
 
 if __name__ == "__main__":
     extract_data()

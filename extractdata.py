@@ -23,7 +23,7 @@ def construct_lists(posts):
         points = result["points"]
         position = result["position"]
 
-        trace = plot.scatter(points, position, year, color.get_green(years, index))
+        trace = plot.scatter(points, position, year, color.get_green(len(years), index))
 
         data_list.append(trace)
 

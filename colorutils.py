@@ -8,6 +8,6 @@ def color_as_hex(green):
     print color
 
 
-def get_green(years, index):
-    green = 256/len(years) * index
+def get_green(num_colors, index):
+    green = 256/num_colors * index
     return green

@@ -9,25 +9,25 @@ def read_data(url, year):
     r = requests.get(url)
     data = json.loads(r.text)
     posts = db.connect_mongo()
-    print "Details are as follows :-"
+    # print "Details are as follows :-"
     for standings_list in data["MRData"]["StandingsTable"]["StandingsLists"]:
         for drivers_standings in standings_list["DriverStandings"]:
             document = {}
-            print json.dumps(drivers_standings, indent=4)
+            # print json.dumps(drivers_standings, indent=4)
             constructor = drivers_standings["Constructors"][0]
-            document["constructor"] = remove_data(constructor)
-            document["driver"] = remove_data(drivers_standings["Driver"])
-            document["wins"] = drivers_standings["wins"]
-            document["points"] = drivers_standings["points"]
-            document["position"] = drivers_standings["position"]
+            document["constructor"] = remove_key(constructor, 'url')
+            document["driver"] = remove_key(drivers_standings["Driver"], 'url')
+            document["wins"] = int(drivers_standings["wins"])
+            document["points"] = float(drivers_standings["points"])
+            document["position"] = int(drivers_standings["position"])
             document["year"] = year
             json_doc = json.dumps(document)
             print json_doc
             posts.insert(document)
 
 
-def remove_data(data):
-    data.pop('url', None)
+def remove_key(data, key):
+    data.pop(key, None)
     return data
 
 

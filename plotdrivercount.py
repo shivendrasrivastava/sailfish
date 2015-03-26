@@ -2,6 +2,7 @@ __author__ = 'Shiven'
 import pymongo
 import plotly.plotly as py
 import plotly.graph_objs as graph
+import collections
 
 
 def extract_data():
@@ -12,20 +13,28 @@ def extract_data():
     if result["ok"] == 1.0:
         result = result["result"]
         print result
-        data_list = []
+        # data_list = []
+        country_dict = collections.defaultdict(dict)
         for dat in result:
-            count = dat["count"]
-            nat = dat['_id']["nat"]
             year = dat["_id"]["yr"]
+            nationality = dat["_id"]["nat"]
+            country_dict[nationality][year] = dat["count"]
 
-            trace = graph.Bar(x=year, y=count, name=nat)
-            data_list.append(trace)
+        trace_list = []
+        for nationality in country_dict.keys():
+            country_years = [year for year in country_dict[nationality]]
+            driver_count = [country_dict[nationality][year] for year in country_years]
 
-    data = graph.Data(data_list)
-    layout = graph.Layout(barmode='group')
-    fig = graph.Figure(data=data, layout=layout)
-    plot_url = py.plot(fig, filename='grouped-bar')
-    print plot_url
+            print country_years
+            print driver_count
+
+            trace = graph.Bar(x=country_years, y=driver_count, name=nationality)
+            trace_list.append(trace)
+
+        trace_list[:] = trace_list[:5]
+        data = graph.Data(trace_list)
+        plot_url = py.plot(data, filename='F1 Country Data')
+        print plot_url
 
 
 def construct_query():

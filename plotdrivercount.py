@@ -1,15 +1,13 @@
 __author__ = 'Shiven'
-import pymongo
-import plotly.plotly as py
-import plotly.graph_objs as graph
 import collections
+import mongoutils as mongo
+import plot
 
 
 def extract_data():
     print "Connecting Mongo"
-    client = pymongo.MongoClient('localhost', 27017)
-    db = client.f1db
-    result = run_query(db)
+    db = mongo.connect_mongo()
+    result = mongo.aggregate_driver_country(db)
     if result["ok"] == 1.0:
         result = result["result"]
         print result
@@ -25,30 +23,16 @@ def extract_data():
             country_years = [year for year in country_dict[nationality]]
             driver_count = [country_dict[nationality][year] for year in country_years]
 
-            print country_years
-            print driver_count
+            trace = plot.trace_bar(country_years, driver_count, nationality)
+            print trace['name']
+            country_list = ["Polish", "Indian", "Brazilian", "British", "Italian", "German"]
+            if trace["name"] in country_list:
+                trace_list.append(trace)
 
-            trace = graph.Bar(x=country_years, y=driver_count, name=nationality)
-            trace_list.append(trace)
-
-        trace_list[:] = trace_list[:5]
-        data = graph.Data(trace_list)
-        plot_url = py.plot(data, filename='F1 Country Data')
-        print plot_url
+        plot.plot_bar(trace_list, 'stack', 'F1 Country Data')
 
 
-def construct_query():
-    pipeline = [{'$group': {'_id': {'driver': "$driver.driverId", 'nation': "$driver.nationality", 'year': "$year"}}},
-                {'$group': {'_id': {'yr': "$_id.year", 'nat': "$_id.nation"}, 'count': {'$sum': 1}}},
-                {'$sort': {'_id': 1}}]
-    # pipeline = [{'$group': {'_id': {'driver' : "$driver.driverId", 'nation': "$driver.nationality"}}},
-    # {'$group': {'_id': "$_id.nation", 'count': {'$sum': 1}}}]
-    return pipeline
 
-
-def run_query(db):
-    pipeline = construct_query()
-    return db.command('aggregate', 'test', pipeline=pipeline)
 
 
 if __name__ == "__main__":

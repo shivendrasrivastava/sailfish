@@ -7,7 +7,8 @@ import mongoutils as db
 
 def extract_data():
     print "Connecting Mongo"
-    posts = db.connect_mongo()
+    database = db.connect_mongo()
+    posts = database.test
     construct_lists(posts)
 
 
@@ -27,7 +28,7 @@ def construct_lists(posts):
 
         data_list.append(trace)
 
-    plot.plot_data(data_list)
+    plot.plot_drivers_position(data_list)
 
 
 def get_data(posts, year):

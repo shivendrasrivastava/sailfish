@@ -32,8 +32,5 @@ def extract_data():
         plot.plot_bar(trace_list, 'stack', 'F1 Country Data')
 
 
-
-
-
 if __name__ == "__main__":
     extract_data()

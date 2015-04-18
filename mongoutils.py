@@ -38,3 +38,10 @@ def aggregate_constructor_driver(db, driver_id):
                 {'$group': {'_id': {"year": "$year", "constructor": "$constructor.name",
                                     "driver": "$driver.driverId", "position": "$position"}}}, {'$sort': {'_id.year': 1}}]
     return db.command('aggregate', 'test', pipeline=pipeline)
+
+
+def aggregate_constructor_by_year(db, constructor_id):
+    pipeline = [{'$match': {"constructor.constructorId": constructor_id}},
+                {'$group': {'_id': {"year": "$year", "constructor": "$constructor.name", "position": "$position"}}},
+                {'$sort': {"_id.year": 1}}]
+    return db.command('aggregate', 'constructors', pipeline=pipeline)

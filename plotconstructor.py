@@ -5,9 +5,9 @@ import plotly.plotly as py
 import plotly.graph_objs as graph
 
 
-def extract_data():
+def extract_data(driver_id_list, constructor_list, filename):
     db = mongo.connect_mongo()
-    driver_id_list = ["michael_schumacher", "barrichello"]
+
     trace_list = []
     for driver in driver_id_list:
         result = mongo.aggregate_constructor_driver(db, driver)
@@ -28,7 +28,6 @@ def extract_data():
 
             trace_list.append(trace_driver)
 
-    constructor_list = ["ferrari"]
     for constructor in constructor_list:
         result_constructor = mongo.aggregate_constructor_by_year(db, constructor)
         if result_constructor["ok"] == 1.0:
@@ -44,9 +43,16 @@ def extract_data():
             trace_list.append(trace_constructor)
 
     data_graph = graph.Data(trace_list)
-    plot_url = py.plot(data_graph, filename="F1 Constructor Vs Driver")
+    plot_url = py.plot(data_graph, filename=filename)
     print plot_url
 
 
 if __name__ == "__main__":
-    extract_data()
+    tuple_list = [(["michael_schumacher", "barrichello"], ["ferrari"], "F1 Ferrari Constructor Vs Driver"),
+                  (["raikkonen", "coulthard"], ["mclaren"], "F1 McLaren Constructor Vs Driver")]
+
+    for driver_id_list, constructor_list, filename in tuple_list:
+        extract_data(driver_id_list, constructor_list, filename)
+
+
+

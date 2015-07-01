@@ -4,6 +4,7 @@ import requests
 import json
 import argparse
 import mongoutils as db
+import utils
 
 
 def read_data(url, year):
@@ -19,7 +20,7 @@ def read_data(url, year):
             # exit(1)
 
             constructor = drivers_standings["Constructor"]
-            document["constructor"] = remove_key(constructor, 'url')
+            document["constructor"] = utils.remove_key(constructor, 'url')
             # document["driver"] = remove_key(drivers_standings["Driver"], 'url')
             document["wins"] = int(drivers_standings["wins"])
             document["points"] = float(drivers_standings["points"])
@@ -28,11 +29,6 @@ def read_data(url, year):
             json_doc = json.dumps(document)
             print json_doc
             posts.insert(document)
-
-
-def remove_key(data, key):
-    data.pop(key, None)
-    return data
 
 
 def build_url(year, data_type):

@@ -4,6 +4,7 @@ import json
 import argparse
 import mongoutils as db
 from ergast_api_error import ErgastConnectionException
+import utils
 
 
 def get_url_data(url):
@@ -31,11 +32,6 @@ def insert_into_mongo(race):
     posts.insert(race)
 
 
-def remove_key(data, key):
-    data.pop(key, None)
-    return data
-
-
 def build_url(year, round, driverId):
     url_prefix = "http://ergast.com/api/f1"
     url = '{url_prefix}/{year}/{round}/drivers/{driverId}/pitstops.json'.format(url_prefix=url_prefix, year=year,
@@ -49,8 +45,8 @@ def get_data_after_year(starting_year, ending_year, data_type="constructorStandi
         for race_data in get_next_season_race_data(year, "alonso"):
             # print race_data
             for race in race_data:
-                remove_key(race, "url")
-                remove_key(race, "Circuit")
+                utils.remove_key(race, "url")
+                utils.remove_key(race, "Circuit")
                 print json.dumps(race)
                 insert_into_mongo(race)
 
